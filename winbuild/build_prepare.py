@@ -3,7 +3,6 @@ import shutil
 import struct
 import subprocess
 import sys
-import time
 
 
 def cmd_cd(path):
@@ -89,9 +88,7 @@ def cmd_msbuild(
     ).format(**locals())
 
 
-# https://sourceforge.net/projects/libjpeg-turbo/2.0.4/libjpeg-turbo-2.0.4.tar.gz/download
-# https://sourceforge.net/projects/libjpeg-turbo/files/2.0.4/libjpeg-turbo-2.0.4.tar.gz/download
-SF_MIRROR = "https://sourceforge.net"
+SF_MIRROR = "http://iweb.dl.sourceforge.net"
 
 architectures = {
     "x86": {"vcvars_arch": "x86", "msbuild_arch": "Win32"},
@@ -108,8 +105,7 @@ header = [
 # dependencies, listed in order of compilation
 deps = {
     "libjpeg": {
-        "url": SF_MIRROR
-        + "/projects/libjpeg-turbo/files/2.0.4/libjpeg-turbo-2.0.4.tar.gz/download",
+        "url": SF_MIRROR + "/project/libjpeg-turbo/2.0.4/libjpeg-turbo-2.0.4.tar.gz",
         "filename": "libjpeg-turbo-2.0.4.tar.gz",
         "dir": "libjpeg-turbo-2.0.4",
         "build": [
@@ -199,7 +195,7 @@ deps = {
         # "bins": [r"objs\{msbuild_arch}\Release\freetype.dll"],
     },
     "lcms2": {
-        "url": SF_MIRROR + "/projects/lcms/files/lcms/2.11/lcms2-2.11.tar.gz/download",
+        "url": SF_MIRROR + "/project/lcms/lcms/2.11/lcms2-2.11.tar.gz",
         "filename": "lcms2-2.11.tar.gz",
         "dir": "lcms2-2.11",
         "patch": {
@@ -367,7 +363,7 @@ def extract_dep(url, filename):
     file = os.path.join(depends_dir, filename)
     if not os.path.exists(file):
         ex = None
-        for i in range(5):  # freetype got 406 sometimes
+        for i in range(3):
             try:
                 print("Fetching %s (attempt %d)..." % (url, i + 1))
                 content = urllib.request.urlopen(url).read()
@@ -376,10 +372,6 @@ def extract_dep(url, filename):
                 break
             except urllib.error.URLError as e:
                 ex = e
-                # sometimes fails, had CERTIFICATE_VERIFY_FAILED
-                # regardless of retry
-                print("sleeping for %d seconds before retry" % i)
-                time.sleep(i)
         else:
             raise RuntimeError(ex)
 
