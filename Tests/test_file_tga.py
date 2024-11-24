@@ -87,6 +87,11 @@ def test_id_field_rle():
         # Assert
         assert im.size == (199, 199)
 
+def test_cross_scan_line():
+    with Image.open("Tests/images/cross_scan_line_truncated.tga") as im:
+        with pytest.raises(OSError):
+            im.load()
+
 
 def test_save(tmp_path):
     test_file = "Tests/images/tga_id_field.tga"
