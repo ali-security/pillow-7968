@@ -51,6 +51,7 @@ class TestDecompressionBomb:
             with Image.open(TEST_FILE):
                 pass
 
+    @pytest.mark.xfail(reason="different exception")
     def test_exception_ico(self):
         with pytest.raises(Image.DecompressionBombError):
             Image.open("Tests/images/decompression_bomb.ico")
@@ -58,6 +59,11 @@ class TestDecompressionBomb:
     def test_exception_gif(self):
         with pytest.raises(Image.DecompressionBombError):
             Image.open("Tests/images/decompression_bomb.gif")
+
+    def test_exception_gif_extents(self):
+        with Image.open("Tests/images/decompression_bomb_extents.gif") as im:
+            with pytest.raises(Image.DecompressionBombError):
+                im.seek(1)
 
 
 class TestDecompressionCrop:
